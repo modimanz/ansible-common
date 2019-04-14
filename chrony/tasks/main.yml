@@ -1,0 +1,36 @@
+---
+
+- name: Make sure Chrony is installed
+  become: true
+  become_user: root
+  apt:
+    name:
+      - chrony
+    state: present
+  register: chronyinstalled
+  tags:
+    - packages
+    - install
+
+- name: Make Sure Chrony is started
+  service:
+    name: chrony
+    state: started
+    enabled: yes
+  tags:
+    - install
+
+- name: Copy the  Config Template
+  become: yes
+  become_user: root
+  template:
+    src: etc/chrony/chrony.conf.j2
+    dest:  /etc/chrony/chrony.conf
+    owner: root
+    group: root
+  tags:
+    - install
+    - update
+  notify:
+    - restart chrony
+
